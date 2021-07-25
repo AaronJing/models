@@ -229,7 +229,7 @@ def initialize(params: base_configs.ExperimentConfig,
   keras_utils.set_session_config(enable_xla=params.runtime.enable_xla)
   performance.set_mixed_precision_policy(dataset_builder.dtype)
   if tf.config.list_physical_devices('GPU'):
-    data_format = 'channels_first'
+    data_format = 'channels_last' if resnet_model.APPROX else 'channels_first'
   else:
     data_format = 'channels_last'
   tf.keras.backend.set_image_data_format(data_format)

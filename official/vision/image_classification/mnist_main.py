@@ -31,7 +31,9 @@ from official.utils.misc import model_helpers
 from official.vision.image_classification.resnet import common
 
 FLAGS = flags.FLAGS
-
+APPROX = True
+from nAMDNN.python.keras.layers.am_convolutional import AMConv2D
+tf.keras.layers.Conv2D = AMConv2D if APPROX else tf.keras.layers.Conv2D
 
 def build_model():
   """Constructs the ML model used to predict handwritten digits."""
@@ -161,7 +163,7 @@ def define_mnist_flags():
                     'Whether to download data to `--data_dir`.')
   flags.DEFINE_integer('profiler_port', 9012,
                        'Port to start profiler server on.')
-  FLAGS.set_default('batch_size', 1024)
+  FLAGS.set_default('batch_size', 16)
 
 
 def main(_):

@@ -32,6 +32,9 @@ from official.vision.image_classification.resnet import imagenet_preprocessing
 
 layers = tf.keras.layers
 
+APPROX = True
+from nAMDNN.python.keras.layers.am_convolutional import AMConv2D
+layers.Conv2D = AMConv2D if APPROX else layers.Conv2D
 
 def _gen_l2_regularizer(use_l2_regularizer=True, l2_weight_decay=1e-4):
   return tf.keras.regularizers.L2(
@@ -321,6 +324,7 @@ def resnet50(num_classes,
   # A softmax that is followed by the model loss must be done cannot be done
   # in float16 due to numeric issues. So we pass dtype=float32.
   x = layers.Activation('softmax', dtype='float32')(x)
-
+  Model = tf.keras.Model(img_input, x, name='resnet50') 
+  Model.summary()
   # Create model.
-  return tf.keras.Model(img_input, x, name='resnet50')
+  return Model
