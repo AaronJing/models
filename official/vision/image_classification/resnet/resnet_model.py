@@ -31,10 +31,9 @@ import tensorflow as tf
 from official.vision.image_classification.resnet import imagenet_preprocessing
 
 layers = tf.keras.layers
-
-APPROX = True
-from nAMDNN.python.keras.layers.am_convolutional import AMConv2D
-layers.Conv2D = AMConv2D if APPROX else layers.Conv2D
+import os
+from AMDNN.python.keras.layers.am_convolutional import AMConv2D
+layers.Conv2D = AMConv2D if os.environ['APPROX'] == str(1) else layers.Conv2D
 
 def _gen_l2_regularizer(use_l2_regularizer=True, l2_weight_decay=1e-4):
   return tf.keras.regularizers.L2(

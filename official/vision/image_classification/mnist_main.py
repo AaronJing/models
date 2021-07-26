@@ -31,9 +31,8 @@ from official.utils.misc import model_helpers
 from official.vision.image_classification.resnet import common
 
 FLAGS = flags.FLAGS
-APPROX = True
-from nAMDNN.python.keras.layers.am_convolutional import AMConv2D
-tf.keras.layers.Conv2D = AMConv2D if APPROX else tf.keras.layers.Conv2D
+from AMDNN.python.keras.layers.am_convolutional import AMConv2D
+tf.keras.layers.Conv2D = AMConv2D if os.environ['APPROX'] else tf.keras.layers.Conv2D
 
 def build_model():
   """Constructs the ML model used to predict handwritten digits."""

@@ -37,6 +37,9 @@ from official.vision.image_classification.efficientnet import efficientnet_model
 from official.vision.image_classification.resnet import common
 from official.vision.image_classification.resnet import resnet_model
 
+class profileOnebatch(tf.keras.callbacks.Callback):
+    def on_train_batch_end(self, batch, logs=None):
+      exit(0) 
 
 def get_models() -> Mapping[str, tf.keras.Model]:
   """Returns the mapping from model type name to Keras model."""
@@ -229,7 +232,7 @@ def initialize(params: base_configs.ExperimentConfig,
   keras_utils.set_session_config(enable_xla=params.runtime.enable_xla)
   performance.set_mixed_precision_policy(dataset_builder.dtype)
   if tf.config.list_physical_devices('GPU'):
-    data_format = 'channels_last' if resnet_model.APPROX else 'channels_first'
+    data_format = 'channels_last' if os.environ["APPROX"] else 'channels_first'
   else:
     data_format = 'channels_last'
   tf.keras.backend.set_image_data_format(data_format)
@@ -384,7 +387,8 @@ def train_and_eval(
         'validation_steps': validation_steps,
         'validation_freq': params.evaluation.epochs_between_evals,
     }
-
+  if os.environ["APPROX"] == str(1):
+    callbacks.append(profileOnebatch())
   history = model.fit(
       train_dataset,
       epochs=train_epochs,
