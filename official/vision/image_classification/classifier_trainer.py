@@ -39,7 +39,8 @@ from official.vision.image_classification.resnet import resnet_model
 
 class profileOnebatch(tf.keras.callbacks.Callback):
     def on_train_batch_end(self, batch, logs=None):
-      exit(0) 
+      if os.environ["EARLYSTOP"] == str(batch):
+        exit(0)
 
 def get_models() -> Mapping[str, tf.keras.Model]:
   """Returns the mapping from model type name to Keras model."""
@@ -387,8 +388,8 @@ def train_and_eval(
         'validation_steps': validation_steps,
         'validation_freq': params.evaluation.epochs_between_evals,
     }
-  if os.environ["APPROX"] == str(1):
-    callbacks.append(profileOnebatch())
+
+  callbacks.append(profileOnebatch())
   history = model.fit(
       train_dataset,
       epochs=train_epochs,
